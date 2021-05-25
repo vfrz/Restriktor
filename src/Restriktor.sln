@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Restriktor", "Restriktor\Restriktor.csproj", "{D771C717-53B9-4E4A-9F79-55B98800E5CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Restriktor.Tests", "Restriktor.Tests\Restriktor.Tests.csproj", "{879C1C82-1497-40B9-991E-E43FE86C3B5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Restriktor.Sandbox", "Restriktor.Sandbox\Restriktor.Sandbox.csproj", "{6B6A4773-DA0F-4FFF-B5A8-BFA03426EB0F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D771C717-53B9-4E4A-9F79-55B98800E5CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D771C717-53B9-4E4A-9F79-55B98800E5CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D771C717-53B9-4E4A-9F79-55B98800E5CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D771C717-53B9-4E4A-9F79-55B98800E5CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{879C1C82-1497-40B9-991E-E43FE86C3B5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{879C1C82-1497-40B9-991E-E43FE86C3B5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{879C1C82-1497-40B9-991E-E43FE86C3B5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{879C1C82-1497-40B9-991E-E43FE86C3B5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B6A4773-DA0F-4FFF-B5A8-BFA03426EB0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B6A4773-DA0F-4FFF-B5A8-BFA03426EB0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B6A4773-DA0F-4FFF-B5A8-BFA03426EB0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B6A4773-DA0F-4FFF-B5A8-BFA03426EB0F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
