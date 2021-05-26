@@ -26,6 +26,9 @@ namespace Restriktor.Validation
 
             if (policy is TypePolicy typePolicy)
                 return new TypeRestrictedProblem(typePolicy.Type, syntaxNode);
+
+            if (policy is MethodPolicy methodPolicy)
+                return new MethodRestrictedProblem(methodPolicy.Method, syntaxNode);
             
             throw new Exception($"Unknown policy type: {policy.GetType()}");
         }

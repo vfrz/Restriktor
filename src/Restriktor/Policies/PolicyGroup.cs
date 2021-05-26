@@ -97,7 +97,7 @@ namespace Restriktor.Policies
             if (type.Namespace is not null)
             {
                 var namespacePolicy = GetPolicyForNamespace(type.Namespace);
-                if (namespacePolicy?.IsExplicit == true)
+                if (namespacePolicy?.IsExplicit == true && namespacePolicy.PolicyType != PolicyType.Neutral)
                     return namespacePolicy;
             }
 
@@ -132,14 +132,21 @@ namespace Restriktor.Policies
         
         public PolicyGroup DenyMethod(MethodModel method) => AddMethodPolicy(method, PolicyType.Deny);
 
-        public Policy GetMethodPolicy(MethodModel method)
+        public Policy GetPolicyForMethod(MethodModel method)
         {
             var explicitMethodPolicy = GetExplicitMethodPolicy(method);
 
             if (explicitMethodPolicy is not null)
                 return explicitMethodPolicy;
 
-            return GetPolicyForType(method.Type);
+            var typePolicy = GetPolicyForType(method.Type);
+            if (typePolicy?.IsExplicit == true && typePolicy.PolicyType != PolicyType.Neutral)
+                return typePolicy;
+
+            return new MethodPolicy(method, DefaultPolicyType)
+            {
+                IsExplicit = false
+            };
         }
         
         public Policy GetExplicitMethodPolicy(MethodModel method)

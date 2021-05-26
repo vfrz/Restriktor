@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using Restriktor.Policies;
 
 namespace Restriktor.Sandbox
@@ -10,15 +9,17 @@ namespace Restriktor.Sandbox
         {
             var restrictor = new Restrictor();
 
-            restrictor.Policies.DefaultPolicyType = PolicyType.Allow;
-            
+            restrictor.Policies.DefaultPolicyType = PolicyType.Deny;
+
             restrictor.Policies
-                .AllowNamespace("System")
-                .DenyType(typeof(Assembly));
+                .AddNamespacePolicy("System", PolicyType.Neutral)
+                .AddNamespacePolicy("System.Reflection", PolicyType.Allow)
+                .AddNamespacePolicy("System.Runtime.InteropServices", PolicyType.Allow)
+                .AllowMethod("System.Console.WriteLine(System.String)");
 
             var nl = Environment.NewLine;
 
-            var result = restrictor.Validate("using System; using System.Reflection; public void B() { Assembly a; }");
+            var result = restrictor.Validate("using System; using System.Runtime.InteropServices; [DllImport(\"test.so\")] public static extern void B();");
 
             Console.WriteLine(result.ToString());
         }

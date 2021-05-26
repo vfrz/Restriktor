@@ -53,5 +53,9 @@ namespace Restriktor.Core
         {
             return $"{Type}.{Name}({Signature})";
         }
+        
+        public static implicit operator string(MethodModel method) => method?.ToString();
+
+        public static implicit operator MethodModel(string method) => new(method);
     }
 }
