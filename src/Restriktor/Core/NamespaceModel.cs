@@ -10,6 +10,8 @@ namespace Restriktor.Core
 
         public ImmutableArray<string> Parts { get; }
 
+        public bool IsGlobalNamespace => Parts.Length == 0;
+
         public NamespaceModel(string[] parts)
         {
             if (parts.Any(string.IsNullOrWhiteSpace))
@@ -18,7 +20,7 @@ namespace Restriktor.Core
             Parts = parts.ToImmutableArray();
         }
 
-        public NamespaceModel(string ns) : this(ns.Split(Separator))
+        public NamespaceModel(string ns) : this(ns is not null ? ns.Split(Separator) : Array.Empty<string>())
         {
         }
 
@@ -27,13 +29,16 @@ namespace Restriktor.Core
             if (Parts.Length > 1)
                 return new NamespaceModel(Parts.SkipLast(1).ToArray());
 
+            if (Parts.Length == 1)
+                return new NamespaceModel(Array.Empty<string>());
+
             return null;
         }
 
         public bool Match(NamespaceModel another, bool perfectMatch = false)
         {
-            if (perfectMatch)
-                return string.Equals(ToString(), another.ToString(), StringComparison.Ordinal);
+            if (perfectMatch && another.Parts.Length != Parts.Length)
+                return false;
 
             if (another.Parts.Length > Parts.Length)
                 return false;
@@ -49,11 +54,14 @@ namespace Restriktor.Core
 
         public override string ToString()
         {
+            if (IsGlobalNamespace)
+                return "<global namespace>";
+            
             return string.Join(Separator, Parts);
         }
 
         public static implicit operator string(NamespaceModel ns) => ns?.ToString();
 
-        public static implicit operator NamespaceModel(string ns) => ns is null ? null : new NamespaceModel(ns);
+        public static implicit operator NamespaceModel(string ns) => new(ns);
     }
 }
