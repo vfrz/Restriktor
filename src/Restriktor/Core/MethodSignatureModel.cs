@@ -26,9 +26,9 @@ namespace Restriktor.Core
             IsWildcard = string.Equals(parameters, WildcardCharacter, StringComparison.Ordinal);
         }
 
-        public bool Match(MethodSignatureModel another)
+        public bool Match(MethodSignatureModel another, bool perfectMatch = false)
         {
-            if (IsWildcard)
+            if (IsWildcard && !perfectMatch)
                 return true;
 
             if (Parameters.Length != another.Parameters.Length)

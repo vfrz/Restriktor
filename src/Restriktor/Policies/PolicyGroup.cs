@@ -115,5 +115,40 @@ namespace Restriktor.Policies
 
             return policy;
         }
+
+        public PolicyGroup AddMethodPolicy(MethodModel method, PolicyType policyType)
+        {
+            var existingExplicitPolicy = GetExplicitMethodPolicy(method);
+
+            if (existingExplicitPolicy is not null)
+                throw new Exception($"A policy for method: {method} already exists");
+
+            _policies.Add(new MethodPolicy(method, policyType));
+
+            return this;
+        }
+
+        public PolicyGroup AllowMethod(MethodModel method) => AddMethodPolicy(method, PolicyType.Allow);
+        
+        public PolicyGroup DenyMethod(MethodModel method) => AddMethodPolicy(method, PolicyType.Deny);
+
+        public Policy GetMethodPolicy(MethodModel method)
+        {
+            var explicitMethodPolicy = GetExplicitMethodPolicy(method);
+
+            if (explicitMethodPolicy is not null)
+                return explicitMethodPolicy;
+
+            return GetPolicyForType(method.Type);
+        }
+        
+        public Policy GetExplicitMethodPolicy(MethodModel method)
+        {
+            var policy = _policies
+                .OfType<MethodPolicy>()
+                .SingleOrDefault(p => p.Method.Match(method));
+
+            return policy;
+        }
     }
 }

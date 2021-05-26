@@ -38,7 +38,7 @@ namespace Restriktor.Core
             throw new NotImplementedException();
         }
 
-        public bool Match(MethodModel another)
+        public bool Match(MethodModel another, bool perfectMatch = false)
         {
             if (!Type.Match(another.Type))
                 return false;
@@ -46,7 +46,7 @@ namespace Restriktor.Core
             if (!string.Equals(Name, another.Name, StringComparison.Ordinal))
                 return false;
 
-            return Signature.Match(another.Signature);
+            return Signature.Match(another.Signature, perfectMatch);
         }
 
         public override string ToString()
