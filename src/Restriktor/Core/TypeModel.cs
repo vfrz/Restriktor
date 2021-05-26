@@ -5,7 +5,7 @@ namespace Restriktor.Core
 {
     public class TypeModel
     {
-        private const string Separator = ".";
+        internal const string Separator = ".";
 
         public string Name { get; }
 
@@ -15,6 +15,13 @@ namespace Restriktor.Core
         {
             Name = name;
             Namespace = ns;
+        }
+
+        public TypeModel(string nameWithNamespace)
+        {
+            var split = nameWithNamespace.Split(Separator);
+            Name = split.Last();
+            Namespace = new NamespaceModel(split.SkipLast(1).ToArray());
         }
 
         public TypeModel(Type type) : this(type.Name, type.Namespace)

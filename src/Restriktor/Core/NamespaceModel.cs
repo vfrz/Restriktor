@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Immutable;
 using System.Linq;
+using Restriktor.Extensions;
 
 namespace Restriktor.Core
 {
@@ -20,7 +21,7 @@ namespace Restriktor.Core
             Parts = parts.ToImmutableArray();
         }
 
-        public NamespaceModel(string ns) : this(ns is not null ? ns.Split(Separator) : Array.Empty<string>())
+        public NamespaceModel(string ns) : this(ns.SplitWithEmptyOrNull(Separator))
         {
         }
 

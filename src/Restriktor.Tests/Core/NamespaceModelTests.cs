@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Restriktor.Tests.Core
 {
-    public class NamespaceTests
+    public class NamespaceModelTests
     {
         [Theory]
         [InlineData("System", "System", true, true)]
@@ -41,7 +41,7 @@ namespace Restriktor.Tests.Core
         [InlineData(null, "<global namespace>")]
         [InlineData("System", "System")]
         [InlineData("System.Console", "System.Console")]
-        public void ToString_Nominal(string ns, string expectedValue)
+        public void StringConstructor_ToString(string ns, string expectedValue)
         {
             Check.That(new NamespaceModel(ns).ToString()).HasSameValueAs(expectedValue);
         }
