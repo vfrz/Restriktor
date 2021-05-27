@@ -117,5 +117,17 @@ namespace Restriktor.Validation
 
             base.VisitVariableDeclaration(node);
         }
+
+        public override void VisitSimpleBaseType(SimpleBaseTypeSyntax node)
+        {
+            var typeInfo = _semanticModel.GetTypeInfo(node.Type);
+            
+            if (typeInfo.Type is null)
+                throw new Exception($"Failed to fetch type info from simple base type: {node.ToString()} at {node.GetFileLinePositionSpan().StartLinePosition}");
+
+            ValidateTypeInfo(typeInfo, node);
+            
+            base.VisitSimpleBaseType(node);
+        }
     }
 }

@@ -17,15 +17,19 @@ namespace Restriktor.Core
             Namespace = ns;
         }
 
-        public TypeModel(string nameWithNamespace)
+        public static TypeModel Parse(string type)
         {
-            var split = nameWithNamespace.Split(Separator);
-            Name = split.Last();
-            Namespace = new NamespaceModel(split.SkipLast(1).ToArray());
+            if (string.IsNullOrWhiteSpace(type))
+                throw new ArgumentException($"Failed to parse {nameof(TypeModel)} because argument {nameof(type)} is empty");
+
+            var split = type.Split(Separator);
+            var typeModel = new TypeModel(split.Last(), new NamespaceModel(split.SkipLast(1).ToArray()));
+            return typeModel;
         }
 
-        public TypeModel(Type type) : this(type.Name, type.Namespace)
+        public static TypeModel FromType(Type type)
         {
+            return Parse(type.FullName);
         }
 
         public bool Match(TypeModel another)
@@ -51,20 +55,6 @@ namespace Restriktor.Core
             return Name;
         }
 
-        public static implicit operator string(TypeModel typeModel) => typeModel?.ToString();
-
-        public static implicit operator TypeModel(string type)
-        {
-            var parts = type.Split(Separator);
-
-            var name = parts.Last();
-
-            if (parts.Length > 1)
-                return new TypeModel(name, new NamespaceModel(parts.SkipLast(1).ToArray()));
-
-            return new TypeModel(name, null);
-        }
-
-        public static implicit operator TypeModel(Type type) => new(type.Name, type.Namespace);
+        public static implicit operator TypeModel(string type) => Parse(type);
     }
 }

@@ -13,9 +13,9 @@ namespace Restriktor.Tests.Core
         [InlineData("Console.WriteLine(System.Object)", "Console.WriteLine(System.Object)")]
         [InlineData("Console.WriteLine(System.Object,System.String)", "Console.WriteLine(System.Object,System.String)")]
         [InlineData("Console.WriteLine(System.Object, System.String )", "Console.WriteLine(System.Object,System.String)")]
-        public void StringConstructor_ToString(string method, string expected)
+        public void Parse_ToString(string method, string expected)
         {
-            Check.That(new MethodModel(method).ToString()).HasSameValueAs(expected);
+            Check.That(MethodModel.Parse(method).ToString()).HasSameValueAs(expected);
         }
     }
 }

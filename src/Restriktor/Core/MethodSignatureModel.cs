@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using Restriktor.Extensions;
 
 namespace Restriktor.Core
@@ -7,11 +8,11 @@ namespace Restriktor.Core
     public class MethodSignatureModel
     {
         internal const string WildcardCharacter = "*";
-        
-        internal const string Separator = ",";
-        
+
+        internal const string ParametersSeparator = ",";
+
         public TypeModel[] Parameters { get; }
-        
+
         public bool IsWildcard { get; }
 
         public MethodSignatureModel(TypeModel[] parameters, bool isWildcard = false)
@@ -20,10 +21,19 @@ namespace Restriktor.Core
             IsWildcard = isWildcard;
         }
 
-        public MethodSignatureModel(string parameters)
+        public static MethodSignatureModel Parse(string methodSignature)
         {
-            Parameters = parameters.SplitWithEmptyOrNull(Separator).TrimAll().Select(type => new TypeModel(type)).ToArray();
-            IsWildcard = string.Equals(parameters, WildcardCharacter, StringComparison.Ordinal);
+            var parameters = methodSignature.SplitWithEmptyOrNull(ParametersSeparator).TrimAll().Select(TypeModel.Parse).ToArray();
+            var isWildcard = string.Equals(methodSignature, WildcardCharacter, StringComparison.Ordinal);
+
+            return new MethodSignatureModel(parameters, isWildcard);
+        }
+
+        public static MethodSignatureModel FromParameterInfos(params ParameterInfo[] parameterInfos)
+        {
+            var parameters = parameterInfos?.Select(p => TypeModel.FromType(p.ParameterType)).ToArray();
+
+            return new MethodSignatureModel(parameters);
         }
 
         public bool Match(MethodSignatureModel another, bool perfectMatch = false)
@@ -48,11 +58,9 @@ namespace Restriktor.Core
             if (IsWildcard)
                 return WildcardCharacter;
 
-            return string.Join(Separator, Parameters.Select(p => p.ToString()));
+            return string.Join(ParametersSeparator, Parameters.Select(p => p.ToString()));
         }
-        
-        public static implicit operator string(MethodSignatureModel methodSignature) => methodSignature?.ToString();
 
-        public static implicit operator MethodSignatureModel(string methodSignature) => new(methodSignature);
+        public static implicit operator MethodSignatureModel(string methodSignature) => Parse(methodSignature);
     }
 }

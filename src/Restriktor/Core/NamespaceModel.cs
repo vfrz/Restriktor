@@ -21,8 +21,11 @@ namespace Restriktor.Core
             Parts = parts.ToImmutableArray();
         }
 
-        public NamespaceModel(string ns) : this(ns.SplitWithEmptyOrNull(Separator))
+        public static NamespaceModel Parse(string ns)
         {
+            var parts = ns.SplitWithEmptyOrNull(Separator);
+            var namespaceModel = new NamespaceModel(parts);
+            return namespaceModel;
         }
 
         public NamespaceModel Parent()
@@ -57,12 +60,10 @@ namespace Restriktor.Core
         {
             if (IsGlobalNamespace)
                 return "<global namespace>";
-            
+
             return string.Join(Separator, Parts);
         }
 
-        public static implicit operator string(NamespaceModel ns) => ns?.ToString();
-
-        public static implicit operator NamespaceModel(string ns) => new(ns);
+        public static implicit operator NamespaceModel(string ns) => Parse(ns);
     }
 }

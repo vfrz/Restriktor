@@ -12,9 +12,9 @@ namespace Restriktor.Tests.Core
         [InlineData("System.String", "System.String")]
         [InlineData("System.String,System.Int32", "System.String,System.Int32")]
         [InlineData("System.String, System.Int32 ", "System.String,System.Int32")]
-        public void StringConstructor_ToString(string methodSignature, string expected)
+        public void Parse_ToString(string methodSignature, string expected)
         {
-            Check.That(new MethodSignatureModel(methodSignature).ToString()).HasSameValueAs(expected);
+            Check.That(MethodSignatureModel.Parse(methodSignature).ToString()).HasSameValueAs(expected);
         }
     }
 }

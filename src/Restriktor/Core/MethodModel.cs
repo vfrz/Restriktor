@@ -6,13 +6,13 @@ namespace Restriktor.Core
 {
     public class MethodModel
     {
+        private static readonly Regex MethodSignatureRegex = new(@"(?<type>\S+)\.(?<name>\S+)\((?<signature>.*)\)");
+
         public string Name { get; }
 
         public MethodSignatureModel Signature { get; }
 
         public TypeModel Type { get; }
-
-        private readonly Regex _methodSignatureRegex = new(@"(?<type>\S+)\.(?<name>\S+)\((?<signature>.*)\)");
 
         public MethodModel(string name, MethodSignatureModel signature, TypeModel type)
         {
@@ -21,21 +21,24 @@ namespace Restriktor.Core
             Type = type;
         }
 
-        public MethodModel(string nameWithTypeAndSignature)
+        public static MethodModel Parse(string method)
         {
-            var regexMatch = _methodSignatureRegex.Match(nameWithTypeAndSignature);
+            var regexMatch = MethodSignatureRegex.Match(method);
 
             if (!regexMatch.Success)
                 throw new Exception();
 
-            Name = regexMatch.Groups["name"].Value;
-            Signature = regexMatch.Groups["signature"].Value;
-            Type = regexMatch.Groups["type"].Value;
+            var methodModel = new MethodModel(regexMatch.Groups["name"].Value, regexMatch.Groups["signature"].Value, regexMatch.Groups["type"].Value);
+            return methodModel;
         }
 
-        public MethodModel(MethodInfo methodInfo)
+        public static MethodModel FromMethodInfo(MethodInfo methodInfo)
         {
-            throw new NotImplementedException();
+            var name = methodInfo.Name;
+            var signature = MethodSignatureModel.FromParameterInfos(methodInfo.GetParameters());
+            var typeModel = TypeModel.FromType(methodInfo.DeclaringType);
+
+            return new MethodModel(name, signature, typeModel);
         }
 
         public bool Match(MethodModel another, bool perfectMatch = false)
@@ -53,9 +56,7 @@ namespace Restriktor.Core
         {
             return $"{Type}.{Name}({Signature})";
         }
-        
-        public static implicit operator string(MethodModel method) => method?.ToString();
 
-        public static implicit operator MethodModel(string method) => new(method);
+        public static implicit operator MethodModel(string method) => Parse(method);
     }
 }

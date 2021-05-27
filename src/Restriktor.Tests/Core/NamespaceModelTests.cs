@@ -24,7 +24,7 @@ namespace Restriktor.Tests.Core
         [InlineData(null, "System", false, false)]
         public void Match_Nominal(string baseNamespace, string anotherNamespace, bool perfectMatch, bool expectedMatch)
         {
-            Check.That(new NamespaceModel(baseNamespace).Match(anotherNamespace, perfectMatch)).HasSameValueAs(expectedMatch);
+            Check.That(NamespaceModel.Parse(baseNamespace).Match(anotherNamespace, perfectMatch)).HasSameValueAs(expectedMatch);
         }
         
         [Theory]
@@ -33,7 +33,7 @@ namespace Restriktor.Tests.Core
         [InlineData("System.Console.Debug", "System.Console")]
         public void Parent_Nominal(string ns, string expectedParent)
         {
-            var parent = new NamespaceModel(ns).Parent();
+            var parent = NamespaceModel.Parse(ns).Parent();
             Check.That(parent.Match(expectedParent, true)).IsTrue();
         }
 
@@ -41,9 +41,9 @@ namespace Restriktor.Tests.Core
         [InlineData(null, "<global namespace>")]
         [InlineData("System", "System")]
         [InlineData("System.Console", "System.Console")]
-        public void StringConstructor_ToString(string ns, string expectedValue)
+        public void Parse_ToString(string ns, string expectedValue)
         {
-            Check.That(new NamespaceModel(ns).ToString()).HasSameValueAs(expectedValue);
+            Check.That(NamespaceModel.Parse(ns).ToString()).HasSameValueAs(expectedValue);
         }
     }
 }
