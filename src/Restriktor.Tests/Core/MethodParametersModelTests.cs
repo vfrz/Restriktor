@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Restriktor.Tests.Core
 {
-    public class MethodSignatureModelTests
+    public class MethodParametersModelTests
     {
         [Theory]
         [InlineData("", "")]
@@ -12,9 +12,9 @@ namespace Restriktor.Tests.Core
         [InlineData("System.String", "System.String")]
         [InlineData("System.String,System.Int32", "System.String,System.Int32")]
         [InlineData("System.String, System.Int32 ", "System.String,System.Int32")]
-        public void Parse_ToString(string methodSignature, string expected)
+        public void Parse_ToString(string methodParameters, string expected)
         {
-            Check.That(MethodSignatureModel.Parse(methodSignature).ToString()).HasSameValueAs(expected);
+            Check.That(MethodParametersModel.Parse(methodParameters).ToString()).HasSameValueAs(expected);
         }
     }
 }

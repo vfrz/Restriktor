@@ -5,7 +5,7 @@ using Restriktor.Extensions;
 
 namespace Restriktor.Core
 {
-    public class MethodSignatureModel
+    public class MethodParametersModel
     {
         internal const string WildcardCharacter = "*";
 
@@ -15,28 +15,28 @@ namespace Restriktor.Core
 
         public bool IsWildcard { get; }
 
-        public MethodSignatureModel(TypeModel[] parameters, bool isWildcard = false)
+        public MethodParametersModel(TypeModel[] parameters, bool isWildcard = false)
         {
             Parameters = parameters ?? Array.Empty<TypeModel>();
             IsWildcard = isWildcard;
         }
 
-        public static MethodSignatureModel Parse(string methodSignature)
+        public static MethodParametersModel Parse(string methodParameters)
         {
-            var parameters = methodSignature.SplitWithEmptyOrNull(ParametersSeparator).TrimAll().Select(TypeModel.Parse).ToArray();
-            var isWildcard = string.Equals(methodSignature, WildcardCharacter, StringComparison.Ordinal);
+            var parameters = methodParameters.SplitWithEmptyOrNull(ParametersSeparator).TrimAll().Select(TypeModel.Parse).ToArray();
+            var isWildcard = string.Equals(methodParameters, WildcardCharacter, StringComparison.Ordinal);
 
-            return new MethodSignatureModel(parameters, isWildcard);
+            return new MethodParametersModel(parameters, isWildcard);
         }
 
-        public static MethodSignatureModel FromParameterInfos(params ParameterInfo[] parameterInfos)
+        public static MethodParametersModel FromParameterInfos(params ParameterInfo[] parameterInfos)
         {
             var parameters = parameterInfos?.Select(p => TypeModel.FromType(p.ParameterType)).ToArray();
 
-            return new MethodSignatureModel(parameters);
+            return new MethodParametersModel(parameters);
         }
 
-        public bool Match(MethodSignatureModel another, bool perfectMatch = false)
+        public bool Match(MethodParametersModel another, bool perfectMatch = false)
         {
             if (IsWildcard && !perfectMatch)
                 return true;
@@ -61,6 +61,6 @@ namespace Restriktor.Core
             return string.Join(ParametersSeparator, Parameters.Select(p => p.ToString()));
         }
 
-        public static implicit operator MethodSignatureModel(string methodSignature) => Parse(methodSignature);
+        public static implicit operator MethodParametersModel(string methodParameters) => Parse(methodParameters);
     }
 }

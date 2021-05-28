@@ -6,39 +6,39 @@ namespace Restriktor.Core
 {
     public class MethodModel
     {
-        private static readonly Regex MethodSignatureRegex = new(@"(?<type>\S+)\.(?<name>\S+)\((?<signature>.*)\)");
+        private static readonly Regex MethodParametersRegex = new(@"(?<type>\S+)\.(?<name>\S+)\((?<parameters>.*)\)");
 
         public string Name { get; }
 
-        public MethodSignatureModel Signature { get; }
+        public MethodParametersModel Parameters { get; }
 
         public TypeModel Type { get; }
 
-        public MethodModel(string name, MethodSignatureModel signature, TypeModel type)
+        public MethodModel(string name, MethodParametersModel parameters, TypeModel type)
         {
             Name = name;
-            Signature = signature;
+            Parameters = parameters;
             Type = type;
         }
 
         public static MethodModel Parse(string method)
         {
-            var regexMatch = MethodSignatureRegex.Match(method);
+            var regexMatch = MethodParametersRegex.Match(method);
 
             if (!regexMatch.Success)
                 throw new Exception();
 
-            var methodModel = new MethodModel(regexMatch.Groups["name"].Value, regexMatch.Groups["signature"].Value, regexMatch.Groups["type"].Value);
+            var methodModel = new MethodModel(regexMatch.Groups["name"].Value, regexMatch.Groups["parameters"].Value, regexMatch.Groups["type"].Value);
             return methodModel;
         }
 
         public static MethodModel FromMethodInfo(MethodInfo methodInfo)
         {
             var name = methodInfo.Name;
-            var signature = MethodSignatureModel.FromParameterInfos(methodInfo.GetParameters());
+            var parameters = MethodParametersModel.FromParameterInfos(methodInfo.GetParameters());
             var typeModel = TypeModel.FromType(methodInfo.DeclaringType);
 
-            return new MethodModel(name, signature, typeModel);
+            return new MethodModel(name, parameters, typeModel);
         }
 
         public bool Match(MethodModel another, bool perfectMatch = false)
@@ -49,12 +49,12 @@ namespace Restriktor.Core
             if (!string.Equals(Name, another.Name, StringComparison.Ordinal))
                 return false;
 
-            return Signature.Match(another.Signature, perfectMatch);
+            return Parameters.Match(another.Parameters, perfectMatch);
         }
 
         public override string ToString()
         {
-            return $"{Type}.{Name}({Signature})";
+            return $"{Type}.{Name}({Parameters})";
         }
 
         public static implicit operator MethodModel(string method) => Parse(method);
