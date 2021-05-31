@@ -14,7 +14,7 @@ namespace Restriktor.Validation
 
         public override string ToString()
         {
-            return $"Denied method usage: '{Method}' at {FileLinePositionSpan.StartLinePosition}";
+            return $"({FileLinePositionSpan.StartLinePosition}): Denied method usage: '{Method}'";
         }
     }
 }

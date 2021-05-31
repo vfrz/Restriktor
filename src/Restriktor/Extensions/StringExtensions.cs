@@ -4,7 +4,7 @@ namespace Restriktor.Extensions
 {
     public static class StringExtensions
     {
-        public static string[] SplitWithEmptyOrNull(this string value, string separator)
+        public static string[] SplitEmptyIfNull(this string value, string separator)
         {
             if (string.IsNullOrEmpty(value))
                 return Array.Empty<string>();

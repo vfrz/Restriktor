@@ -23,7 +23,7 @@ namespace Restriktor.Core
 
         public static MethodParametersModel Parse(string methodParameters)
         {
-            var parameters = methodParameters.SplitWithEmptyOrNull(ParametersSeparator).TrimAll().Select(TypeModel.Parse).ToArray();
+            var parameters = methodParameters.SplitEmptyIfNull(ParametersSeparator).TrimAll().Select(TypeModel.Parse).ToArray();
             var isWildcard = string.Equals(methodParameters, WildcardCharacter, StringComparison.Ordinal);
 
             return new MethodParametersModel(parameters, isWildcard);

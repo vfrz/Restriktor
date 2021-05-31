@@ -45,6 +45,12 @@ namespace Restriktor.Validation
                 assemblies,
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
+            var diagnostics = compilation.GetDiagnostics();
+
+            _result.Problems.AddRange(diagnostics
+                .Where(d => d.Severity == DiagnosticSeverity.Error)
+                .Select(diagnostic => new CompilationProblem(diagnostic)));
+
             _semanticModel = compilation.GetSemanticModel(syntaxTree);
 
             Visit(syntaxTree.GetRoot());
@@ -96,6 +102,30 @@ namespace Restriktor.Validation
             base.VisitInvocationExpression(node);
         }
 
+        public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
+        {
+            var typeInfo = _semanticModel.GetTypeInfo(node.ReturnType);
+
+            if (typeInfo.Type is null)
+                throw new Exception($"Failed to fetch return type info from method declaration: {node.ToString()} at {node.GetFileLinePositionSpan().StartLinePosition}");
+
+            ValidateTypeInfo(typeInfo, node);
+
+            base.VisitMethodDeclaration(node);
+        }
+
+        public override void VisitParameter(ParameterSyntax node)
+        {
+            var typeInfo = _semanticModel.GetTypeInfo(node.Type);
+            
+            if (typeInfo.Type is null)
+                throw new Exception($"Failed to fetch type info from parameter: {node.ToString()} at {node.GetFileLinePositionSpan().StartLinePosition}");
+
+            ValidateTypeInfo(typeInfo, node);
+
+            base.VisitParameter(node);
+        }
+
         public override void VisitUsingDirective(UsingDirectiveSyntax node)
         {
             var policy = _policyGroup.GetPolicyForNamespace(node.Name.ToString(), true);
@@ -121,12 +151,12 @@ namespace Restriktor.Validation
         public override void VisitSimpleBaseType(SimpleBaseTypeSyntax node)
         {
             var typeInfo = _semanticModel.GetTypeInfo(node.Type);
-            
+
             if (typeInfo.Type is null)
                 throw new Exception($"Failed to fetch type info from simple base type: {node.ToString()} at {node.GetFileLinePositionSpan().StartLinePosition}");
 
             ValidateTypeInfo(typeInfo, node);
-            
+
             base.VisitSimpleBaseType(node);
         }
     }

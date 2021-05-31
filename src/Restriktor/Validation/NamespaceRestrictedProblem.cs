@@ -14,7 +14,7 @@ namespace Restriktor.Validation
 
         public override string ToString()
         {
-            return $"Denied namespace usage: '{Namespace}' at {FileLinePositionSpan.StartLinePosition}";
+            return $"({FileLinePositionSpan.StartLinePosition}): Denied namespace usage: '{Namespace}'";
         }
     }
 }

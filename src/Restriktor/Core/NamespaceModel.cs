@@ -23,7 +23,7 @@ namespace Restriktor.Core
 
         public static NamespaceModel Parse(string ns)
         {
-            var parts = ns.SplitWithEmptyOrNull(Separator);
+            var parts = ns.SplitEmptyIfNull(Separator);
             var namespaceModel = new NamespaceModel(parts);
             return namespaceModel;
         }

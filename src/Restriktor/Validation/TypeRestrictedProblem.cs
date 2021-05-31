@@ -14,7 +14,7 @@ namespace Restriktor.Validation
         
         public override string ToString()
         {
-            return $"Denied type usage: '{Type}' at {FileLinePositionSpan.StartLinePosition}";
+            return $"({FileLinePositionSpan.StartLinePosition}): Denied type usage: '{Type}'";
         }
     }
 }
