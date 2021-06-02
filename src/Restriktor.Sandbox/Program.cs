@@ -12,12 +12,13 @@ namespace Restriktor.Sandbox
             restrictor.Policies.DefaultPolicyType = PolicyType.Deny;
 
             restrictor.Policies
+                .AllowType("System.Attribute")
                 .AllowType("System.Void")
                 .AllowType("System.Int32");
 
             var nl = Environment.NewLine;
 
-            var result = restrictor.Validate("public class A { public void B(int a) {} }");
+            var result = restrictor.Validate("public class A : System.Attribute { }");
 
             Console.WriteLine(result.ToString());
         }

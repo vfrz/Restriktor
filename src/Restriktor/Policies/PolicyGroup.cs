@@ -22,7 +22,7 @@ namespace Restriktor.Policies
 
         public PolicyGroup AddNamespacePolicy(NamespaceModel ns, PolicyType policyType)
         {
-            var existingExplicitPolicy = GetExplicitNamespacePolicy(ns, true);
+            var existingExplicitPolicy = GetNamespaceExplicitPolicy(ns, true);
 
             if (existingExplicitPolicy is not null)
                 throw new Exception($"A policy for namespace '{ns}' already exists");
@@ -36,9 +36,9 @@ namespace Restriktor.Policies
 
         public PolicyGroup DenyNamespace(NamespaceModel ns) => AddNamespacePolicy(ns, PolicyType.Deny);
 
-        public Policy GetPolicyForNamespace(NamespaceModel ns, bool perfectMatch = false)
+        public Policy GetNamespacePolicy(NamespaceModel ns, bool perfectMatch = false)
         {
-            var explicitPolicy = GetExplicitNamespacePolicy(ns, perfectMatch);
+            var explicitPolicy = GetNamespaceExplicitPolicy(ns, perfectMatch);
 
             if (explicitPolicy is not null)
                 return explicitPolicy;
@@ -49,7 +49,7 @@ namespace Restriktor.Policies
             };
         }
 
-        public Policy GetExplicitNamespacePolicy(NamespaceModel ns, bool perfectMatch = false)
+        public Policy GetNamespaceExplicitPolicy(NamespaceModel ns, bool perfectMatch = false)
         {
             if (perfectMatch)
                 return _policies.OfType<NamespacePolicy>().SingleOrDefault(p => p.Namespace.Match(ns, true));
@@ -73,7 +73,7 @@ namespace Restriktor.Policies
 
         public PolicyGroup AddTypePolicy(TypeModel type, PolicyType policyType)
         {
-            var existingExplicitPolicy = GetExplicitTypePolicy(type);
+            var existingExplicitPolicy = GetTypeExplicitPolicy(type);
 
             if (existingExplicitPolicy is not null)
                 throw new Exception($"A policy for type: {type} already exists");
@@ -87,16 +87,16 @@ namespace Restriktor.Policies
         
         public PolicyGroup DenyType(TypeModel type) => AddTypePolicy(type, PolicyType.Deny);
 
-        public Policy GetPolicyForType(TypeModel type)
+        public Policy GetTypePolicy(TypeModel type)
         {
-            var explicitTypePolicy = GetExplicitTypePolicy(type);
+            var explicitTypePolicy = GetTypeExplicitPolicy(type);
 
             if (explicitTypePolicy is not null)
                 return explicitTypePolicy;
 
             if (type.Namespace is not null)
             {
-                var namespacePolicy = GetPolicyForNamespace(type.Namespace);
+                var namespacePolicy = GetNamespacePolicy(type.Namespace);
                 if (namespacePolicy?.IsExplicit == true && namespacePolicy.PolicyType != PolicyType.Neutral)
                     return namespacePolicy;
             }
@@ -107,7 +107,7 @@ namespace Restriktor.Policies
             };
         }
 
-        public Policy GetExplicitTypePolicy(TypeModel type)
+        public Policy GetTypeExplicitPolicy(TypeModel type)
         {
             var policy = _policies
                 .OfType<TypePolicy>()
@@ -118,7 +118,7 @@ namespace Restriktor.Policies
 
         public PolicyGroup AddMethodPolicy(MethodModel method, PolicyType policyType)
         {
-            var existingExplicitPolicy = GetExplicitMethodPolicy(method);
+            var existingExplicitPolicy = GetMethodExplicitPolicy(method);
 
             if (existingExplicitPolicy is not null)
                 throw new Exception($"A policy for method: {method} already exists");
@@ -132,14 +132,14 @@ namespace Restriktor.Policies
         
         public PolicyGroup DenyMethod(MethodModel method) => AddMethodPolicy(method, PolicyType.Deny);
 
-        public Policy GetPolicyForMethod(MethodModel method)
+        public Policy GetMethodPolicy(MethodModel method)
         {
-            var explicitMethodPolicy = GetExplicitMethodPolicy(method);
+            var explicitMethodPolicy = GetMethodExplicitPolicy(method);
 
             if (explicitMethodPolicy is not null)
                 return explicitMethodPolicy;
 
-            var typePolicy = GetPolicyForType(method.Type);
+            var typePolicy = GetTypePolicy(method.Type);
             if (typePolicy?.IsExplicit == true && typePolicy.PolicyType != PolicyType.Neutral)
                 return typePolicy;
 
@@ -149,7 +149,7 @@ namespace Restriktor.Policies
             };
         }
         
-        public Policy GetExplicitMethodPolicy(MethodModel method)
+        public Policy GetMethodExplicitPolicy(MethodModel method)
         {
             var policy = _policies
                 .OfType<MethodPolicy>()

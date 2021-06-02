@@ -64,7 +64,7 @@ namespace Restriktor.Validation
                 ? new TypeModel(typeInfo.Type.Name, null)
                 : new TypeModel(typeInfo.Type.Name, typeInfo.Type.ContainingNamespace?.ToString());
 
-            var policy = _policyGroup.GetPolicyForType(typeModel);
+            var policy = _policyGroup.GetTypePolicy(typeModel);
 
             if (policy.PolicyType == PolicyType.Deny)
                 _result.Problems.Add(ValidationProblem.FromPolicy(policy, node));
@@ -74,7 +74,7 @@ namespace Restriktor.Validation
         {
             var typeInfo = _semanticModel.GetTypeInfo(node);
 
-            if (typeInfo.Type is null)
+            if (typeInfo.Type is null  or IErrorTypeSymbol)
                 throw new Exception($"Failed to fetch type info from attribute: {node.ToString()} at {node.GetFileLinePositionSpan().StartLinePosition}");
 
             ValidateTypeInfo(typeInfo, node);
@@ -89,7 +89,7 @@ namespace Restriktor.Validation
                 var parameters = methodSymbol.Parameters.Select(p => $"{p.Type.ContainingNamespace}.{p.Type.Name}");
                 var method = $"{methodSymbol.ContainingType}.{methodSymbol.Name}({string.Join(",", parameters)})";
 
-                var policy = _policyGroup.GetPolicyForMethod(method);
+                var policy = _policyGroup.GetMethodPolicy(method);
 
                 if (policy.PolicyType == PolicyType.Deny)
                     _result.Problems.Add(ValidationProblem.FromPolicy(policy, node));
@@ -102,11 +102,23 @@ namespace Restriktor.Validation
             base.VisitInvocationExpression(node);
         }
 
+        public override void VisitTypeConstraint(TypeConstraintSyntax node)
+        {
+            var typeInfo = _semanticModel.GetTypeInfo(node.Type);
+
+            if (typeInfo.Type is null or IErrorTypeSymbol)
+                throw new Exception($"Failed to fetch return type info from type constraint: {node.ToString()} at {node.GetFileLinePositionSpan().StartLinePosition}");
+
+            ValidateTypeInfo(typeInfo, node);
+
+            base.VisitTypeConstraint(node);
+        }
+
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
             var typeInfo = _semanticModel.GetTypeInfo(node.ReturnType);
 
-            if (typeInfo.Type is null)
+            if (typeInfo.Type is null or IErrorTypeSymbol)
                 throw new Exception($"Failed to fetch return type info from method declaration: {node.ToString()} at {node.GetFileLinePositionSpan().StartLinePosition}");
 
             ValidateTypeInfo(typeInfo, node);
@@ -117,8 +129,8 @@ namespace Restriktor.Validation
         public override void VisitParameter(ParameterSyntax node)
         {
             var typeInfo = _semanticModel.GetTypeInfo(node.Type);
-            
-            if (typeInfo.Type is null)
+
+            if (typeInfo.Type is null or IErrorTypeSymbol)
                 throw new Exception($"Failed to fetch type info from parameter: {node.ToString()} at {node.GetFileLinePositionSpan().StartLinePosition}");
 
             ValidateTypeInfo(typeInfo, node);
@@ -128,7 +140,7 @@ namespace Restriktor.Validation
 
         public override void VisitUsingDirective(UsingDirectiveSyntax node)
         {
-            var policy = _policyGroup.GetPolicyForNamespace(node.Name.ToString(), true);
+            var policy = _policyGroup.GetNamespacePolicy(node.Name.ToString(), true);
 
             if (policy.PolicyType == PolicyType.Deny)
                 _result.Problems.Add(ValidationProblem.FromPolicy(policy, node));
@@ -140,7 +152,7 @@ namespace Restriktor.Validation
         {
             var typeInfo = _semanticModel.GetTypeInfo(node.Type);
 
-            if (typeInfo.Type is null)
+            if (typeInfo.Type is null or IErrorTypeSymbol)
                 throw new Exception($"Failed to fetch type info from variable declaration: {node.ToString()} at {node.GetFileLinePositionSpan().StartLinePosition}");
 
             ValidateTypeInfo(typeInfo, node);
@@ -152,7 +164,7 @@ namespace Restriktor.Validation
         {
             var typeInfo = _semanticModel.GetTypeInfo(node.Type);
 
-            if (typeInfo.Type is null)
+            if (typeInfo.Type is null or IErrorTypeSymbol)
                 throw new Exception($"Failed to fetch type info from simple base type: {node.ToString()} at {node.GetFileLinePositionSpan().StartLinePosition}");
 
             ValidateTypeInfo(typeInfo, node);

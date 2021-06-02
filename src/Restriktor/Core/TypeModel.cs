@@ -10,11 +10,14 @@ namespace Restriktor.Core
         public string Name { get; }
 
         public NamespaceModel Namespace { get; }
+        
+        public GenericTypesModel GenericTypes { get; }
 
-        public TypeModel(string name, NamespaceModel ns)
+        public TypeModel(string name, NamespaceModel ns, GenericTypesModel genericTypes = null)
         {
             Name = name;
             Namespace = ns;
+            GenericTypes = genericTypes;
         }
 
         public static TypeModel Parse(string type)
@@ -32,7 +35,7 @@ namespace Restriktor.Core
             return Parse(type.FullName);
         }
 
-        public bool Match(TypeModel another)
+        public bool Match(TypeModel another, bool perfectMatch = false)
         {
             if (Namespace is null)
             {
@@ -44,7 +47,19 @@ namespace Restriktor.Core
                 return false;
             }
 
-            return string.Equals(Name, another.Name, StringComparison.Ordinal);
+            if (!string.Equals(Name, another.Name, StringComparison.Ordinal))
+                return false;
+
+            if (GenericTypes is not null)
+            {
+                if (another.GenericTypes is null)
+                    return false;
+
+                if (!GenericTypes.Match(another.GenericTypes, perfectMatch))
+                    return false;
+            }
+
+            return true;
         }
 
         public override string ToString()
