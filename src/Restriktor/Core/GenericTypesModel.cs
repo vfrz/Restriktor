@@ -20,12 +20,12 @@ namespace Restriktor.Core
             IsWildcard = isWildcard;
         }
 
-        public static GenericTypesModel Parse(string methodParameters)
+        public static GenericTypesModel Parse(string genericTypes)
         {
-            var parameters = methodParameters.SplitEmptyIfNull(TypesSeparator).TrimAll().Select(TypeModel.Parse).ToArray();
-            var isWildcard = string.Equals(methodParameters, WildcardCharacter, StringComparison.Ordinal);
+            var types = genericTypes.SplitOrEmptyArray(TypesSeparator).TrimAll().Select(TypeModel.Parse).ToArray();
+            var isWildcard = string.Equals(genericTypes, WildcardCharacter, StringComparison.Ordinal);
 
-            return new GenericTypesModel(parameters, isWildcard);
+            return new GenericTypesModel(types, isWildcard);
         }
         
         public static GenericTypesModel FromType(Type type)

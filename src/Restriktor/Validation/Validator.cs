@@ -11,7 +11,7 @@ using Restriktor.Policies;
 
 namespace Restriktor.Validation
 {
-    public class Validator : CSharpSyntaxWalker
+    internal class Validator : CSharpSyntaxWalker
     {
         private readonly PolicyGroup _policyGroup;
 

@@ -7,23 +7,28 @@ namespace Restriktor.Core
 {
     public class NamespaceModel
     {
-        private const string Separator = ".";
+        private const string PartSeparator = ".";
 
         public ImmutableArray<string> Parts { get; }
 
-        public bool IsGlobalNamespace => Parts.Length == 0;
+        public bool IsGlobalNamespace => Parts.IsDefaultOrEmpty;
 
         public NamespaceModel(string[] parts)
         {
-            if (parts.Any(string.IsNullOrWhiteSpace))
-                throw new FormatException("A namespace part can't be null or whitespace");
-
-            Parts = parts.ToImmutableArray();
+            if (parts?.Any() == true)
+            {
+                var regex = CSharpSpecificationRegexes.Identifier.WrapInStartAndEnd();
+                foreach (var part in parts)
+                    if (part is null || !regex.IsMatch(part))
+                        throw new FormatException($"A part of the namespace isn't a valid identifier: '{part}'");
+            }
+            
+            Parts = parts?.ToImmutableArray() ?? new ImmutableArray<string>();
         }
 
         public static NamespaceModel Parse(string ns)
         {
-            var parts = ns.SplitEmptyIfNull(Separator);
+            var parts = ns.SplitOrEmptyArray(PartSeparator);
             var namespaceModel = new NamespaceModel(parts);
             return namespaceModel;
         }
@@ -61,7 +66,7 @@ namespace Restriktor.Core
             if (IsGlobalNamespace)
                 return "<global namespace>";
 
-            return string.Join(Separator, Parts);
+            return string.Join(PartSeparator, Parts);
         }
 
         public static implicit operator NamespaceModel(string ns) => Parse(ns);
