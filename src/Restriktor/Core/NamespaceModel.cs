@@ -35,11 +35,14 @@ namespace Restriktor.Core
 
         public NamespaceModel Parent()
         {
+            if (IsGlobalNamespace)
+                return null;
+            
             if (Parts.Length > 1)
                 return new NamespaceModel(Parts.SkipLast(1).ToArray());
 
             if (Parts.Length == 1)
-                return new NamespaceModel(Array.Empty<string>());
+                return new NamespaceModel(null);
 
             return null;
         }
@@ -64,7 +67,7 @@ namespace Restriktor.Core
         public override string ToString()
         {
             if (IsGlobalNamespace)
-                return "<global namespace>";
+                return "<global namespace>"; //TODO Check if we can do better
 
             return string.Join(PartSeparator, Parts);
         }
