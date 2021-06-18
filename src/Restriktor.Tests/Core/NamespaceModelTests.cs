@@ -169,9 +169,24 @@ namespace Restriktor.Tests.Core
         [InlineData(null, null, false, true)]
         [InlineData("System", null, false, true)]
         [InlineData(null, "System", false, false)]
-        public void Match_Nominal(string baseNamespace, string anotherNamespace, bool perfectMatch, bool expectedMatch)
+        public void Match_Theory(string baseNamespace, string anotherNamespace, bool perfectMatch, bool expectedMatch)
         {
-            Check.That(NamespaceModel.Parse(baseNamespace).Match(anotherNamespace, perfectMatch)).HasSameValueAs(expectedMatch);
+            var match = NamespaceModel.Parse(baseNamespace).Match(anotherNamespace, perfectMatch);
+
+            Check.That(match).HasSameValueAs(expectedMatch);
+        }
+
+        [Theory]
+        [InlineData(null, "")]
+        [InlineData("System", "System")]
+        [InlineData("System.Encoding", "System.Encoding")]
+        [InlineData("System.Encoding.UTF8", "System.Encoding.UTF8")]
+        public void ToString_Theory(string baseNamespace, string expectedValue)
+        {
+            var model = NamespaceModel.Parse(baseNamespace);
+            var stringValue = model.ToString();
+
+            Check.That(stringValue).HasSameValueAs(expectedValue);
         }
     }
 }
