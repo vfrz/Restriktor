@@ -64,7 +64,7 @@ namespace Restriktor.Core
 
         public override string ToString()
         {
-            if (Namespace is not null)
+            if (Namespace is not null && !Namespace.IsGlobalNamespace)
                 return $"{Namespace}{Separator}{Name}";
 
             return Name;

@@ -67,7 +67,7 @@ namespace Restriktor.Core
         public override string ToString()
         {
             if (IsGlobalNamespace)
-                return "<global namespace>"; //TODO Check if we can do better
+                return "";
 
             return string.Join(PartSeparator, Parts);
         }

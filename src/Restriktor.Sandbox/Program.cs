@@ -12,11 +12,12 @@ namespace Restriktor.Sandbox
             restrictor.Policies.DefaultPolicyType = PolicyType.Deny;
 
             restrictor.Policies
-                .AllowType("System.Attribute")
+                .AllowNamespace("System.Encoding")
+                .AllowType("System.Console")
                 .AllowType("System.Void")
-                .AllowType("System.Int32");
-
-            var nl = Environment.NewLine;
+                .AllowType("System.Int32")
+                .AllowMethod("System.Console.WriteLine(*)")
+                .DenyMethod("System.Console.ReadLine(*)");
 
             var result = restrictor.Validate("public class A : System.Attribute { }");
 

@@ -7,7 +7,7 @@ namespace Restriktor.Tests.Core
     public class MethodModelTests
     {
         [Theory]
-        [InlineData("Console.WriteLine()", "<global namespace>.Console.WriteLine()")]
+        [InlineData("Console.WriteLine()", "Console.WriteLine()")]
         [InlineData("System.Console.WriteLine()", "System.Console.WriteLine()")]
         [InlineData("System.Console.WriteLine(*)", "System.Console.WriteLine(*)")]
         [InlineData("System.Console.WriteLine(System.Object)", "System.Console.WriteLine(System.Object)")]
