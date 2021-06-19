@@ -22,18 +22,30 @@ namespace Restriktor.Core
 
         public static GenericTypesModel Parse(string genericTypes)
         {
-            var types = genericTypes.SplitOrEmptyArray(TypesSeparator).TrimAll().Select(TypeModel.Parse).ToArray();
+            if (string.IsNullOrWhiteSpace(genericTypes))
+                throw new FormatException($"Can't parse generic types from: '{genericTypes}'");
+
             var isWildcard = string.Equals(genericTypes, WildcardCharacter, StringComparison.Ordinal);
 
-            return new GenericTypesModel(types, isWildcard);
+            if (isWildcard)
+                return new GenericTypesModel(null, true);
+
+            var types = genericTypes.SplitOrEmptyArray(TypesSeparator).TrimAll().Select(TypeModel.Parse).ToArray();
+
+            return new GenericTypesModel(types);
         }
-        
+
         public static GenericTypesModel FromType(Type type)
         {
             if (!type.IsGenericType)
-                throw new Exception($"Type {type} is not generic");
-            
-            var parameters = type.GetGenericArguments()?.Select(TypeModel.FromType).ToArray();
+                throw new ArgumentException($"Type {type} is not generic");
+
+            var genericArguments = type.GetGenericArguments();
+
+            if (genericArguments.All(arg => arg.IsGenericParameter))
+                return new GenericTypesModel(null, true);
+
+            var parameters = genericArguments.Select(TypeModel.FromType).ToArray();
 
             return new GenericTypesModel(parameters);
         }

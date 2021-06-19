@@ -26,10 +26,14 @@ namespace Restriktor.Core
             if (string.IsNullOrWhiteSpace(methodParameters))
                 return new MethodParametersModel(null);
             
-            var parameters = methodParameters.SplitOrEmptyArray(ParametersSeparator).TrimAll().Select(TypeModel.Parse).ToArray();
             var isWildcard = string.Equals(methodParameters, WildcardCharacter, StringComparison.Ordinal);
+            
+            if (isWildcard)
+                return new MethodParametersModel(null, true);
+            
+            var parameters = methodParameters.SplitOrEmptyArray(ParametersSeparator).TrimAll().Select(TypeModel.Parse).ToArray();
 
-            return new MethodParametersModel(parameters, isWildcard);
+            return new MethodParametersModel(parameters);
         }
 
         public static MethodParametersModel FromParameterInfos(params ParameterInfo[] parameterInfos)

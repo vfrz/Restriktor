@@ -9,15 +9,13 @@ namespace Restriktor.Policies
     {
         public PolicyType DefaultPolicyType { get; set; }
 
-        public IReadOnlyCollection<Policy> Policies => _policies.AsReadOnly();
+        internal readonly List<Policy> Policies;
 
-        private readonly List<Policy> _policies;
-
-        public PolicyGroup(PolicyType defaultPolicyType = PolicyType.Deny)
+        internal PolicyGroup(PolicyType defaultPolicyType = PolicyType.Deny)
         {
             DefaultPolicyType = defaultPolicyType;
 
-            _policies = new List<Policy>();
+            Policies = new List<Policy>();
         }
 
         public PolicyGroup AddNamespacePolicy(NamespaceModel ns, PolicyType policyType)
@@ -27,7 +25,7 @@ namespace Restriktor.Policies
             if (existingExplicitPolicy is not null)
                 throw new Exception($"A policy for namespace '{ns}' already exists");
 
-            _policies.Add(new NamespacePolicy(ns, policyType));
+            Policies.Add(new NamespacePolicy(ns, policyType));
 
             return this;
         }
@@ -52,13 +50,13 @@ namespace Restriktor.Policies
         public Policy GetNamespaceExplicitPolicy(NamespaceModel ns, bool perfectMatch = false)
         {
             if (perfectMatch)
-                return _policies.OfType<NamespacePolicy>().SingleOrDefault(p => p.Namespace.Match(ns, true));
+                return Policies.OfType<NamespacePolicy>().SingleOrDefault(p => p.Namespace.Match(ns, true));
 
             var currentNamespace = ns;
 
             do
             {
-                var policy = _policies
+                var policy = Policies
                     .OfType<NamespacePolicy>()
                     .SingleOrDefault(p => p.Namespace.Match(currentNamespace, true));
 
@@ -78,7 +76,7 @@ namespace Restriktor.Policies
             if (existingExplicitPolicy is not null)
                 throw new Exception($"A policy for type: {type} already exists");
 
-            _policies.Add(new TypePolicy(type, policyType));
+            Policies.Add(new TypePolicy(type, policyType));
 
             return this;
         }
@@ -109,7 +107,7 @@ namespace Restriktor.Policies
 
         public Policy GetTypeExplicitPolicy(TypeModel type)
         {
-            var policy = _policies
+            var policy = Policies
                 .OfType<TypePolicy>()
                 .SingleOrDefault(p => p.Type.Match(type));
 
@@ -123,7 +121,7 @@ namespace Restriktor.Policies
             if (existingExplicitPolicy is not null)
                 throw new Exception($"A policy for method: {method} already exists");
 
-            _policies.Add(new MethodPolicy(method, policyType));
+            Policies.Add(new MethodPolicy(method, policyType));
 
             return this;
         }
@@ -151,7 +149,7 @@ namespace Restriktor.Policies
         
         public Policy GetMethodExplicitPolicy(MethodModel method)
         {
-            var policy = _policies
+            var policy = Policies
                 .OfType<MethodPolicy>()
                 .SingleOrDefault(p => p.Method.Match(method));
 

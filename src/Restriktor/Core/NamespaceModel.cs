@@ -7,13 +7,13 @@ namespace Restriktor.Core
 {
     public class NamespaceModel
     {
-        private const string PartSeparator = ".";
+        private const string PartsSeparator = ".";
 
         public ImmutableArray<string> Parts { get; }
 
         public bool IsGlobalNamespace => Parts.IsDefaultOrEmpty;
 
-        public NamespaceModel(string[] parts)
+        public NamespaceModel(params string[] parts)
         {
             if (parts?.Any() == true)
             {
@@ -28,7 +28,7 @@ namespace Restriktor.Core
 
         public static NamespaceModel Parse(string ns)
         {
-            var parts = ns.SplitOrEmptyArray(PartSeparator);
+            var parts = ns.SplitOrEmptyArray(PartsSeparator);
             var namespaceModel = new NamespaceModel(parts);
             return namespaceModel;
         }
@@ -69,7 +69,7 @@ namespace Restriktor.Core
             if (IsGlobalNamespace)
                 return "";
 
-            return string.Join(PartSeparator, Parts);
+            return string.Join(PartsSeparator, Parts);
         }
 
         public static implicit operator NamespaceModel(string ns) => Parse(ns);
