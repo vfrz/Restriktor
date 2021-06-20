@@ -1,6 +1,7 @@
 using System;
-using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Restriktor.Extensions;
 
 namespace Restriktor.Core
@@ -9,11 +10,13 @@ namespace Restriktor.Core
     {
         private const string PartsSeparator = ".";
 
-        public ImmutableArray<string> Parts { get; }
+        public ReadOnlyCollection<string> Parts => Array.AsReadOnly(_parts);
+        
+        private readonly string[] _parts;
 
-        public bool IsGlobalNamespace => Parts.IsDefaultOrEmpty;
+        public bool IsGlobalNamespace => _parts.Length == 0;
 
-        public NamespaceModel(params string[] parts)
+        public NamespaceModel(string[] parts)
         {
             if (parts?.Any() == true)
             {
@@ -22,13 +25,26 @@ namespace Restriktor.Core
                     if (part is null || !regex.IsMatch(part))
                         throw new FormatException($"A part of the namespace isn't a valid identifier: '{part}'");
             }
-            
-            Parts = parts?.ToImmutableArray() ?? new ImmutableArray<string>();
+
+            _parts = parts ?? Array.Empty<string>();
         }
 
         public static NamespaceModel Parse(string ns)
         {
-            var parts = ns.SplitOrEmptyArray(PartsSeparator);
+            if (ns is null)
+                return new NamespaceModel(null);
+            
+            var match = CSharpSpecificationRegexes.Namespace.Match(ns);
+
+            if (!match.Success)
+                throw new FormatException($"Can't parse namespace from value: '{ns}'");
+
+            var parts = match.Groups.Cast<Group>()
+                .Skip(1)
+                .Where(group => group.Success)
+                .SelectMany(group => group.Captures.Select(capture => capture.Value))
+                .ToArray();
+            
             var namespaceModel = new NamespaceModel(parts);
             return namespaceModel;
         }
@@ -37,11 +53,11 @@ namespace Restriktor.Core
         {
             if (IsGlobalNamespace)
                 return null;
-            
-            if (Parts.Length > 1)
-                return new NamespaceModel(Parts.SkipLast(1).ToArray());
 
-            if (Parts.Length == 1)
+            if (_parts.Length > 1)
+                return new NamespaceModel(_parts.SkipLast(1).ToArray());
+
+            if (_parts.Length == 1)
                 return new NamespaceModel(null);
 
             return null;
@@ -49,15 +65,15 @@ namespace Restriktor.Core
 
         public bool Match(NamespaceModel another, bool perfectMatch = false)
         {
-            if (perfectMatch && another.Parts.Length != Parts.Length)
+            if (perfectMatch && another._parts.Length != _parts.Length)
                 return false;
 
-            if (another.Parts.Length > Parts.Length)
+            if (another._parts.Length > _parts.Length)
                 return false;
 
-            for (var i = 0; i < another.Parts.Length; i++)
+            for (var i = 0; i < another._parts.Length; i++)
             {
-                if (!string.Equals(Parts[i], another.Parts[i], StringComparison.Ordinal))
+                if (!string.Equals(_parts[i], another._parts[i], StringComparison.Ordinal))
                     return false;
             }
 
@@ -69,7 +85,7 @@ namespace Restriktor.Core
             if (IsGlobalNamespace)
                 return "";
 
-            return string.Join(PartsSeparator, Parts);
+            return string.Join(PartsSeparator, _parts);
         }
 
         public static implicit operator NamespaceModel(string ns) => Parse(ns);

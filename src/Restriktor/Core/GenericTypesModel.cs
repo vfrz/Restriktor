@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Restriktor.Extensions;
 
@@ -10,13 +11,15 @@ namespace Restriktor.Core
 
         internal const string TypesSeparator = ",";
 
-        public TypeModel[] Types { get; }
+        public ReadOnlyCollection<TypeModel> Types => Array.AsReadOnly(_types);
+
+        private readonly TypeModel[] _types;
 
         public bool IsWildcard { get; }
 
         public GenericTypesModel(TypeModel[] types, bool isWildcard = false)
         {
-            Types = types ?? Array.Empty<TypeModel>();
+            _types = types ?? Array.Empty<TypeModel>();
             IsWildcard = isWildcard;
         }
 
@@ -55,15 +58,15 @@ namespace Restriktor.Core
             if (IsWildcard && !perfectMatch)
                 return true;
 
-            if (perfectMatch && another.Types.Length != Types.Length)
+            if (perfectMatch && another._types.Length != _types.Length)
                 return false;
 
-            if (another.Types.Length > Types.Length)
+            if (another._types.Length > _types.Length)
                 return false;
 
-            for (var i = 0; i < another.Types.Length; i++)
+            for (var i = 0; i < another._types.Length; i++)
             {
-                if (!Types[i].Match(another.Types[i]))
+                if (!_types[i].Match(another._types[i]))
                     return false;
             }
 

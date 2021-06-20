@@ -23,6 +23,6 @@ namespace Restriktor.Core
 
         public static readonly Regex Identifier = new($"@?(?:{IdentifierStartCharacter})(?:{IdentifierPartCharacter})*");
 
-        public static readonly Regex NamespaceIdentifier = new($@"(?:{Identifier}(?:\.{Identifier})*)");
+        public static readonly Regex Namespace = new($@"(?:(?<Root>{Identifier})(?:\.(?<Subs>{Identifier}))*)");
     }
 }

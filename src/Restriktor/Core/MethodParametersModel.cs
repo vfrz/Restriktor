@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using Restriktor.Extensions;
@@ -11,13 +12,15 @@ namespace Restriktor.Core
 
         internal const string ParametersSeparator = ",";
 
-        public TypeModel[] Parameters { get; }
+        public ReadOnlyCollection<TypeModel> Parameters => Array.AsReadOnly(_parameters);
+        
+        private readonly TypeModel[] _parameters;
 
         public bool IsWildcard { get; }
 
         public MethodParametersModel(TypeModel[] parameters, bool isWildcard = false)
         {
-            Parameters = parameters ?? Array.Empty<TypeModel>();
+            _parameters = parameters ?? Array.Empty<TypeModel>();
             IsWildcard = isWildcard;
         }
 
@@ -48,12 +51,12 @@ namespace Restriktor.Core
             if (IsWildcard && !perfectMatch)
                 return true;
 
-            if (Parameters.Length != another.Parameters.Length)
+            if (_parameters.Length != another._parameters.Length)
                 return false;
 
-            for (var i = 0; i < Parameters.Length; i++)
+            for (var i = 0; i < _parameters.Length; i++)
             {
-                if (!Parameters[i].Match(another.Parameters[i]))
+                if (!_parameters[i].Match(another._parameters[i]))
                     return false;
             }
 
@@ -65,7 +68,7 @@ namespace Restriktor.Core
             if (IsWildcard)
                 return WildcardCharacter;
 
-            return string.Join(ParametersSeparator, Parameters.Select(p => p.ToString()));
+            return string.Join(ParametersSeparator, _parameters.Select(p => p.ToString()));
         }
 
         public static implicit operator MethodParametersModel(string methodParameters) => Parse(methodParameters);

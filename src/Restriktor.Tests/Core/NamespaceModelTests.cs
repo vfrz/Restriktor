@@ -12,7 +12,7 @@ namespace Restriktor.Tests.Core
         {
             var model = new NamespaceModel(new[] {"System"});
 
-            Check.That(model.Parts.Length).HasSameValueAs(1);
+            Check.That(model.Parts).CountIs(1);
             Check.That(model.Parts[0]).HasSameValueAs("System");
         }
 
@@ -21,7 +21,7 @@ namespace Restriktor.Tests.Core
         {
             var model = new NamespaceModel(new[] {"System", "Encoding"});
 
-            Check.That(model.Parts.Length).HasSameValueAs(2);
+            Check.That(model.Parts).CountIs(2);
             Check.That(model.Parts[0]).HasSameValueAs("System");
             Check.That(model.Parts[1]).HasSameValueAs("Encoding");
         }
@@ -31,7 +31,7 @@ namespace Restriktor.Tests.Core
         {
             var model = new NamespaceModel(null);
 
-            Check.That(model.Parts.IsDefaultOrEmpty).IsTrue();
+            Check.That(model.Parts).CountIs(0);
             Check.That(model.IsGlobalNamespace).IsTrue();
         }
 
@@ -67,7 +67,7 @@ namespace Restriktor.Tests.Core
         {
             var model = NamespaceModel.Parse("System");
 
-            Check.That(model.Parts.Length).HasSameValueAs(1);
+            Check.That(model.Parts).CountIs(1);
             Check.That(model.Parts[0]).HasSameValueAs("System");
         }
 
@@ -76,7 +76,7 @@ namespace Restriktor.Tests.Core
         {
             var model = NamespaceModel.Parse("System.Encoding");
 
-            Check.That(model.Parts.Length).HasSameValueAs(2);
+            Check.That(model.Parts).CountIs(2);
             Check.That(model.Parts[0]).HasSameValueAs("System");
             Check.That(model.Parts[1]).HasSameValueAs("Encoding");
         }
@@ -86,7 +86,7 @@ namespace Restriktor.Tests.Core
         {
             var model = NamespaceModel.Parse("System.Encoding.UTF8");
 
-            Check.That(model.Parts.Length).HasSameValueAs(3);
+            Check.That(model.Parts).CountIs(3);
             Check.That(model.Parts[0]).HasSameValueAs("System");
             Check.That(model.Parts[1]).HasSameValueAs("Encoding");
             Check.That(model.Parts[2]).HasSameValueAs("UTF8");
@@ -97,7 +97,6 @@ namespace Restriktor.Tests.Core
         {
             var model = NamespaceModel.Parse(null);
 
-            Check.That(model.Parts.Length).HasSameValueAs(0);
             Check.That(model.IsGlobalNamespace).IsTrue();
         }
 
@@ -137,7 +136,7 @@ namespace Restriktor.Tests.Core
 
             var parent = model.Parent();
 
-            Check.That(parent.Parts.Length).HasSameValueAs(1);
+            Check.That(parent.Parts).CountIs(1);
             Check.That(parent.Parts[0]).HasSameValueAs("System");
         }
 
@@ -148,7 +147,7 @@ namespace Restriktor.Tests.Core
 
             var parent = model.Parent();
 
-            Check.That(parent.Parts.Length).HasSameValueAs(2);
+            Check.That(parent.Parts).CountIs(2);
             Check.That(parent.Parts[0]).HasSameValueAs("System");
             Check.That(parent.Parts[1]).HasSameValueAs("Encoding");
         }
