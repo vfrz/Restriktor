@@ -21,8 +21,10 @@ namespace Restriktor.Core
 
         public static readonly Regex IdentifierStartCharacter = new($"{LetterCharacter}|_");
 
-        public static readonly Regex Identifier = new($"@?(?:{IdentifierStartCharacter})(?:{IdentifierPartCharacter})*");
+        public static readonly Regex Identifier = new($"(?:{IdentifierStartCharacter})(?:{IdentifierPartCharacter})*");
 
-        public static readonly Regex Namespace = new($@"(?:(?<Root>{Identifier})(?:\.(?<Subs>{Identifier}))*)");
+        public static readonly Regex Namespace = new($@"(?:({Identifier})(?:\.({Identifier}))*)");
+
+        public static readonly Regex Type = new($@"(?:(?<Namespace>{Namespace})\.)?(?<Type>{Identifier})");
     }
 }

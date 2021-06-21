@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 namespace Restriktor.Core
 {
@@ -23,16 +22,29 @@ namespace Restriktor.Core
         public static TypeModel Parse(string type)
         {
             if (string.IsNullOrWhiteSpace(type))
-                throw new ArgumentException($"Failed to parse {nameof(TypeModel)} because argument {nameof(type)} is empty");
+                throw new FormatException($"Failed to parse {nameof(TypeModel)} because argument {nameof(type)} is empty");
 
-            var split = type.Split(Separator);
-            var typeModel = new TypeModel(split.Last(), new NamespaceModel(split.SkipLast(1).ToArray()));
+            var match = CSharpSpecificationRegexes.Type.Match(type);
+
+            if (!match.Success || !match.Groups["Type"].Success)
+                throw new FormatException($"Failed to parse {nameof(TypeModel)} from value: '{type}'");
+
+            var typeName = match.Groups["Type"].Value;
+
+            var namespaceModel = match.Groups["Namespace"].Success ? NamespaceModel.Parse(match.Groups["Namespace"].Value) : new NamespaceModel(null);
+            
+            var typeModel = new TypeModel(typeName, namespaceModel);
             return typeModel;
         }
 
         public static TypeModel FromType(Type type)
         {
-            return Parse(type.FullName);
+            //TODO Take type.DeclaringType into account
+            
+            var typeName = type.Name;
+            var namespaceModel = NamespaceModel.Parse(type.Name);
+            
+            return new TypeModel(typeName, namespaceModel);
         }
 
         public bool Match(TypeModel another, bool perfectMatch = false)

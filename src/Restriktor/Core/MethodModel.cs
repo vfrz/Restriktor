@@ -6,24 +6,27 @@ namespace Restriktor.Core
 {
     public class MethodModel
     {
-        private static readonly Regex MethodParametersRegex = new(@"(?<type>\S+)\.(?<name>\S+)\((?<parameters>.*)\)");
+        private static readonly Regex MethodRegex = new(@"(?<type>\S+)\.(?<name>\S+)\((?<parameters>.*)\)");
 
         public string Name { get; }
 
         public MethodParametersModel Parameters { get; }
 
         public TypeModel Type { get; }
+        
+        public GenericTypesModel GenericTypes { get; }
 
-        public MethodModel(string name, MethodParametersModel parameters, TypeModel type)
+        public MethodModel(string name, MethodParametersModel parameters, TypeModel type, GenericTypesModel genericTypes = null)
         {
             Name = name;
             Parameters = parameters;
             Type = type;
+            GenericTypes = genericTypes;
         }
 
         public static MethodModel Parse(string method)
         {
-            var regexMatch = MethodParametersRegex.Match(method);
+            var regexMatch = MethodRegex.Match(method);
 
             if (!regexMatch.Success)
                 throw new Exception();
@@ -48,6 +51,15 @@ namespace Restriktor.Core
 
             if (!string.Equals(Name, another.Name, StringComparison.Ordinal))
                 return false;
+            
+            if (GenericTypes is not null)
+            {
+                if (another.GenericTypes is null)
+                    return false;
+
+                if (!GenericTypes.Match(another.GenericTypes, perfectMatch))
+                    return false;
+            }
 
             return Parameters.Match(another.Parameters, perfectMatch);
         }

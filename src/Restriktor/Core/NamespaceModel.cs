@@ -37,7 +37,7 @@ namespace Restriktor.Core
             var match = CSharpSpecificationRegexes.Namespace.Match(ns);
 
             if (!match.Success)
-                throw new FormatException($"Can't parse namespace from value: '{ns}'");
+                throw new FormatException($"Failed to parse ({nameof(NamespaceModel)}) from value: '{ns}'");
 
             var parts = match.Groups.Cast<Group>()
                 .Skip(1)

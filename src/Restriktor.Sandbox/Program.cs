@@ -1,4 +1,5 @@
 ﻿using System;
+using Restriktor.Core;
 using Restriktor.Policies;
 
 namespace Restriktor.Sandbox
