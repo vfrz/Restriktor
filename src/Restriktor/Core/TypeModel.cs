@@ -42,7 +42,7 @@ namespace Restriktor.Core
             //TODO Take type.DeclaringType into account
             
             var typeName = type.Name;
-            var namespaceModel = NamespaceModel.Parse(type.Name);
+            var namespaceModel = NamespaceModel.Parse(type.Namespace);
             
             return new TypeModel(typeName, namespaceModel);
         }
